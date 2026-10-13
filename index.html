@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Atmos — Weather, beautifully told</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+          colors: { midnight: '#0b1020', lavender: '#a78bfa', aqua: '#67e8f9' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="min-h-screen bg-midnight text-white antialiased">
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-12">
+    <header class="flex items-center justify-between gap-4">
+      <a href="#" class="flex items-center gap-3" aria-label="Atmos home">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 15.5a4.5 4.5 0 0 1 .7-8.95A5.8 5.8 0 0 1 18.4 9a3.4 3.4 0 0 1-.4 6.8H6.5Z"/><path d="m9 18-1 2m7-2-1 2"/></svg></span>
+        <span><span class="block font-display text-xl font-bold tracking-tight">atmos<span class="text-violet-300">.</span></span><span class="block text-[10px] uppercase tracking-[.22em] text-slate-500">Weather, in focus</span></span>
+      </a>
+      <div class="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs text-slate-400 sm:flex">
+        <span class="live-dot"></span> LIVE WEATHER
+      </div>
+    </header>
+
+    <section class="mx-auto my-auto grid w-full max-w-5xl items-center gap-10 py-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-16 lg:py-16">
+      <div class="space-y-7">
+        <div class="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-3.5 py-2 text-xs font-medium text-violet-200">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42"/><circle cx="12" cy="12" r="4"/></svg>
+          YOUR DAY, AT A GLANCE
+        </div>
+        <div class="space-y-4">
+          <h1 class="font-display text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl xl:text-7xl">A little more<br/><span class="gradient-text">in tune</span> with<br/>the weather.</h1>
+          <p class="max-w-md text-base leading-7 text-slate-400 sm:text-lg">The forecast for wherever life takes you. Search a city and get the conditions, without the clutter.</p>
+        </div>
+        <form id="weather-form" class="search-shell flex w-full max-w-lg items-center gap-3 rounded-2xl p-2" autocomplete="off">
+          <svg class="ml-3 h-5 w-5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+          <input id="city-input" class="min-w-0 flex-1 bg-transparent py-3 text-sm text-white outline-none placeholder:text-slate-500" type="text" placeholder="Search any city…" aria-label="City name" />
+          <button id="get-weather-btn" class="search-button inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold" type="submit">
+            <span>Explore</span><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </button>
+        </form>
+        <p id="status-message" class="min-h-5 text-sm text-slate-500" role="status" aria-live="polite">Try a city like Tokyo, London, or Kurnool.</p>
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <span class="mr-1 text-xs text-slate-500">POPULAR</span>
+          <button class="city-chip" type="button" data-city="Tokyo">Tokyo</button>
+          <button class="city-chip" type="button" data-city="London">London</button>
+          <button class="city-chip" type="button" data-city="New York">New York</button>
+          <button class="city-chip" type="button" data-city="Kurnool">Kurnool</button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="weather-card overflow-hidden rounded-[2rem] p-6 sm:p-8">
+          <div class="card-glow"></div>
+          <div class="relative z-10 flex items-start justify-between gap-4">
+            <div><p class="text-xs font-semibold uppercase tracking-[.2em] text-slate-400">CURRENT WEATHER</p><h2 id="city-name" class="mt-2 font-display text-2xl font-semibold">Your city</h2><p id="local-date" class="mt-1 text-sm text-slate-500">Search to see the latest conditions</p></div>
+            <div class="rounded-2xl border border-white/10 bg-white/[0.06] p-3 text-violet-200"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42"/><circle cx="12" cy="12" r="4"/></svg></div>
+          </div>
+          <div class="relative z-10 my-8 flex items-center justify-between gap-3 sm:my-10">
+            <div><div class="flex items-start"><span id="temperature" class="font-display text-7xl font-medium tracking-[-.07em] sm:text-8xl">--</span><span class="mt-2 text-3xl text-violet-200">°</span></div><p id="description" class="mt-2 text-sm capitalize text-slate-300">Waiting for your search</p><p id="feels-like" class="mt-2 text-xs text-slate-500">Feels like —</p></div>
+            <div id="weather-visual" class="weather-visual" aria-hidden="true"><svg viewBox="0 0 120 120" class="h-28 w-28 sm:h-36 sm:w-36"><defs><linearGradient id="sunGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#fb923c"/></linearGradient></defs><circle cx="65" cy="43" r="23" fill="url(#sunGradient)"/><g stroke="#fbbf24" stroke-width="3" stroke-linecap="round"><path d="M65 7v7M65 72v7M29 43h7M94 43h7M39 17l5 5M86 64l5 5M91 17l-5 5M44 64l-5 5"/></g><path d="M29 83a19 19 0 0 1 3-38 29 29 0 0 1 54 9 17 17 0 0 1 3 33H29Z" fill="#c4b5fd" opacity=".95"/><path d="M29 83a19 19 0 0 1 3-38 29 29 0 0 1 54 9 17 17 0 0 1 3 33H29Z" fill="#e0e7ff" opacity=".5"/></svg></div>
+          </div>
+          <div class="relative z-10 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
+            <div class="metric-tile"><span class="metric-icon">↗</span><p class="metric-label">WIND</p><p id="wind" class="metric-value">— <span>m/s</span></p></div>
+            <div class="metric-tile"><span class="metric-icon">◌</span><p class="metric-label">HUMIDITY</p><p id="humidity" class="metric-value">— <span>%</span></p></div>
+            <div class="metric-tile"><span class="metric-icon">⌁</span><p class="metric-label">VISIBILITY</p><p id="visibility" class="metric-value">— <span>km</span></p></div>
+          </div>
+          <div id="error-message" class="relative z-10 mt-4 hidden rounded-xl border border-rose-400/20 bg-rose-400/[0.08] px-4 py-3 text-sm text-rose-200" role="alert"></div>
+          <p class="relative z-10 mt-5 text-[11px] text-slate-600">Weather data powered by OpenWeather.</p>
+        </div>
+        <div class="floating-note"><span class="note-spark">✦</span><span><strong class="block text-xs font-semibold text-slate-200">Stay in the know</strong><span class="mt-0.5 block text-[11px] text-slate-500">Small details. Better days.</span></span></div>
+      </div>
+    </section>
+    <footer class="flex flex-col items-center justify-between gap-3 border-t border-white/[0.07] py-5 text-xs text-slate-600 sm:flex-row">
+      <span>© <span id="year"></span> Atmos Weather</span><span>Made for curious skies <span class="text-violet-300">✦</span></span>
+    </footer>
+  </main>
+
+  <!-- Temperature prediction challenge -->
+  <div id="prediction-modal" class="prediction-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="prediction-title">
+    <div class="prediction-dialog">
+      <button id="prediction-close" class="prediction-close" type="button" aria-label="Skip prediction">×</button>
+      <div class="prediction-badge"><span>✦</span> WEATHER CHALLENGE</div>
+      <div id="prediction-question">
+        <div class="prediction-icon">🌡️</div>
+        <h2 id="prediction-title" class="font-display">Make your prediction</h2>
+        <p class="prediction-subtitle">What do you think the temperature is in <strong id="prediction-city">this city</strong> right now?</p>
+        <form id="prediction-form" class="prediction-form">
+          <label for="prediction-input">Your temperature guess</label>
+          <div class="prediction-input-wrap">
+            <input id="prediction-input" type="number" min="-80" max="65" step="0.1" placeholder="e.g. 31" required />
+            <span>°C</span>
+          </div>
+          <p class="prediction-hint">No pressure. Trust your weather instincts 👀</p>
+          <button class="prediction-submit" type="submit">Reveal actual weather <span>↗</span></button>
+        </form>
+      </div>
+      <div id="prediction-result" class="hidden">
+        <div id="result-emoji" class="prediction-icon">🎯</div>
+        <p class="prediction-eyebrow">YOUR PREDICTION SCORE</p>
+        <div id="closeness-score" class="closeness-score">—%</div>
+        <p id="prediction-feedback" class="prediction-subtitle">Let's see how close you were.</p>
+        <div class="prediction-comparison">
+          <div><span>Your guess</span><strong id="your-guess">—°C</strong></div>
+          <div class="comparison-divider">→</div>
+          <div><span>Actual temp</span><strong id="actual-temp">—°C</strong></div>
+        </div>
+        <p id="temperature-difference" class="prediction-hint"></p>
+        <button id="prediction-done" class="prediction-submit" type="button">Explore full weather <span>↗</span></button>
+      </div>
+      <p class="prediction-footnote">Score is based on how close your guess is to the actual temperature.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
